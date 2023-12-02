@@ -1,9 +1,6 @@
-from django.shortcuts import render, redirect
-
-# Create your views here.
-from django.shortcuts import render
 from django.db import connection
-from myapp.models import Userinfo
+from django.shortcuts import redirect
+from django.shortcuts import render
 
 
 # Create your views here.
@@ -13,24 +10,21 @@ def home(request):
 
 def login_(request):
     if request.method == 'POST':
-        print('post')
         email = request.POST.get('email')
         password = request.POST.get('password')
-        print('email:', email)
-        print('password:', password)
-        user = Userinfo.objects.raw('select * from UserInfo where email = %s and password = %s', [email, password])
 
-        if len(list(user)) == 0:
-            print('user not found')
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                select * from UserInfo where email = %s and password = %s
+            """, [email, password])
+            user = cursor.fetchone()
+
+        if user is None:
             return render(request, 'login.html', {'error': 'Invalid email or password'})
         else:
-            print('user found')
-            # Save user_id to session
-            request.session['user_id'] = user[0].user_id
+            request.session['user_id'] = user[0]  # user_id is the first column
             return redirect('/personal')
-
     else:
-        print('get')
         return render(request, 'login.html')
 
 
