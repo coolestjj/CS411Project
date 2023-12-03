@@ -1,7 +1,8 @@
 from django.db import connection
 from django.shortcuts import redirect
 from django.shortcuts import render
-
+import random
+import string
 
 # Create your views here.
 def home(request):
@@ -52,3 +53,36 @@ def personal(request):
         symptoms = cursor.fetchall()
 
     return render(request, 'personal.html', {'symptoms': symptoms, 'userInfo': userInfo})
+
+
+def register(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        password = request.POST.get('password')
+        gender = request.POST.get('gender')
+        country = request.POST.get('country')
+        age = request.POST.get('age')
+
+        # Generate random user_id of 8 characters
+        all_chars = string.ascii_letters + string.digits
+        user_id = ''.join(random.choices(all_chars, k=8))
+
+        # Check if email already exists
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM UserInfo WHERE email = %s", [email])
+            row = cursor.fetchone()
+            if row is not None:
+                return render(request, 'register.html', {'error': 'Email already exists!'})
+
+        # insert into UserInfo
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO UserInfo (user_id, username, email, phone, password, gender, country, age, role_id) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 2)",
+                [user_id, username, email, phone, password, gender, country, age])
+
+        return render(request, 'register.html', {'success': 'Register successfully!'})
+    else:
+        return render(request, 'register.html')
