@@ -4,6 +4,7 @@ from django.shortcuts import render
 import random
 import string
 
+
 # Create your views here.
 def home(request):
     return render(request, 'home.html')
@@ -39,6 +40,7 @@ def personal(request):
             cursor.execute("""
                 delete from UserInfo where user_id = %s
             """, [user_id])
+        return redirect('/login')
 
     with connection.cursor() as cursor:
         # Get user's info
