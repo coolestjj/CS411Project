@@ -32,9 +32,16 @@ def login_(request):
 def personal(request):
     # Get user_id from session
     user_id = request.session.get('user_id')
+
+    # Check if the delete parameter is in the request
+    if request.method == 'POST' and 'delete' in request.POST:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                delete from UserInfo where user_id = %s
+            """, [user_id])
+
     with connection.cursor() as cursor:
         # Get user's info
-        # Get user's phone and gender
         cursor.execute("""
             select email, phone, gender from UserInfo
             where user_id = %s

@@ -37,6 +37,13 @@ Your symptoms are:
     </tbody>
 </table>
 
+<form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="delete" value="true">
+    <input type="submit" value="delete userinfo">
+</form>
+
+
 <!-- Optional JavaScript; choose one of the two! -->
 
 <!-- Option 1: Bootstrap Bundle with Popper -->
