@@ -16,6 +16,38 @@ Your email is {{ userInfo.0 }}
 <br>
 Your info is {{ userInfo.1 }} and {{ userInfo.2 }}
 <br>
+Your trackable:
+<table class="table table-striped">
+    <thread>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">checkin date</th>
+            <th scope="col">tag</th>
+            <th scope="col">condition</th>
+            <th scope="col">weather</th>
+            <th scope="col">symptom</th>
+            <th scope="col">treatment</th>
+        </tr>
+    </thread>
+
+    <tbody>
+
+    {% for record in trackableInfo %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ record.0 }}</td>
+            <td>{{ record.1 }}</td>
+            <td>{{ record.2 }}</td>
+            <td>{{ record.3 }}</td>
+            <td>{{ record.4 }}</td>
+            <td>{{ record.5 }}</td>
+        <tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+<br>
 Your symptoms are:
 <table class="table table-striped">
     <thread>

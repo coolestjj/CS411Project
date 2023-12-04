@@ -51,6 +51,20 @@ def personal(request):
         userInfo = cursor.fetchone()
         # print(userInfo[0])
 
+        # Get user's trackable info
+        cursor.execute("""
+            select tra.checkin_date as checkinDate, t.name as tagname, c.name as `condition`,
+             w.name as weather, s.name as symptom, tre.name as treatment
+            from Trackable tra
+            left join `Condition` c on tra.condition_id = c.condition_id
+            left join Symptom s on tra.symptom_id = s.symptom_id
+            left join Treatment tre on tra.treatment_id = tre.treatment_id
+            left join Tag t on tra.tag_id = t.tag_id
+            left join Weather w on tra.weather_id = w.weather_id
+            where user_id = %s
+        """, [user_id])
+        trackableInfo = cursor.fetchall()
+
         # Get user's symptoms
         cursor.execute("""
                     select distinct s.name from Symptom s
@@ -61,7 +75,8 @@ def personal(request):
                 """, [user_id])
         symptoms = cursor.fetchall()
 
-    return render(request, 'personal.html', {'symptoms': symptoms, 'userInfo': userInfo})
+    return render(request, 'personal.html', {'trackableInfo': trackableInfo,
+                                             'symptoms': symptoms, 'userInfo': userInfo})
 
 
 def register(request):
