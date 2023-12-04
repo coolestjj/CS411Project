@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- jquery -->
+    <script src="http://cdn.staticfile.org/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
+    <!-- bootstrap -->
+    <link href="http://cdn.staticfile.org/twitter-bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://cdn.staticfile.org/twitter-bootstrap/3.3.1/js/bootstrap.min.js" type="text/javascript"></script>
+    <!-- bootstrap-select -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+    <title>Update userinfo</title>
+</head>
+<body>
+<form action="" method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">User name</label>
+        <input type="text" class="form-control" placeholder="Username" aria-label="Username"
+               aria-describedby="basic-addon1" name="username">
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1"
+               aria-describedby="emailHelp" name="email">
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input type="password" class="form-control"
+               id="exampleInputPassword1" name="password">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Phone</label>
+        <input type="text" class="form-control" placeholder="Phone number" aria-label="Phone number"
+               aria-describedby="basic-addon1" name="phone">
+    </div>
+
+    <label class="form-label">Gender</label>
+    <select class="form-select" aria-label="Default select example" name="gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+    </select>
+
+    <div class="mb-3">
+        <label class="form-label">Age</label>
+        <input type="number" class="form-control" placeholder="age" aria-label="age"
+               aria-describedby="basic-addon1" name="age">
+    </div>
+
+    <label class="form-label">Country</label>
+    <select class="selectpicker show-tick form-control" data-live-search="true" name="country">
+        <option>US</option>
+        <option>CA</option>
+        <option>CN</option>
+        <option>N/A</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% if success %}
+    <p>{{ success }}</p>
+{% endif %}
+{% if error %}
+    <p>{{ error }}</p>
+{% endif %}
+
+</body>
+</html>

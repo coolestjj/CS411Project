@@ -93,3 +93,27 @@ def register(request):
         return render(request, 'register.html', {'success': 'Register successfully!'})
     else:
         return render(request, 'register.html')
+
+
+def updateUser(request):
+    user_id = request.session.get('user_id')
+    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        password = request.POST.get('password')
+        gender = request.POST.get('gender')
+        country = request.POST.get('country')
+        age = request.POST.get('age')
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                UPDATE UserInfo
+                SET username = %s, email = %s, phone = %s, password = %s, gender = %s, country = %s, age = %s
+                WHERE user_id = %s
+            """, [username, email, phone, password, gender, country, age, user_id])
+
+        return redirect('/login')
+
+    else:
+        return render(request, 'updateUser.html')
