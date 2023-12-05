@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert Trackable</title>
+</head>
+<body>
+    <h1>Insert Trackable</h1>
+
+    <form action="" method="POST">
+        {% csrf_token %}
+
+        <!-- Check-in Date -->
+        <label for="checkinDate">Check-in Date:</label>
+        <input type="date" id="checkinDate" name="checkinDate" required><br>
+
+        <!-- Tag -->
+        <label for="tag">Tag:</label>
+        <input type="text" id="tag" name="tag" required><br>
+
+        <!-- Condition -->
+        <label for="condition">Condition:</label>
+        <input type="text" id="condition" name="condition" required><br>
+
+        <!-- Weather -->
+        <label for="weather">Weather:</label>
+        <input type="text" id="weather" name="weather" required><br>
+
+        <!-- Symptom -->
+        <label for="symptom">Symptom:</label>
+        <input type="text" id="symptom" name="symptom" required><br>
+
+        <!-- Treatment -->
+        <label for="treatment">Treatment:</label>
+        <input type="text" id="treatment" name="treatment" required><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

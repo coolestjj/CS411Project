@@ -9,6 +9,25 @@ import string
 def home(request):
     return render(request, 'home.html')
 
+def inserttrackable(request):
+    user_id = request.session.get('user_id')
+    if request.method == 'POST':
+        checkin_date = request.POST.get('checkinDate')
+        tag = int(request.POST.get('tag'))
+        condition = int(request.POST.get('condition'))
+        weather = int(request.POST.get('weather'))
+        symptom = int(request.POST.get('symptom'))
+        treatment = int(request.POST.get('treatment'))
+
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO Trackable ( user_id, checkin_date, tag_id, condition_id, weather_id, symptom_id, treatment_id) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                [user_id, checkin_date, tag, condition, weather, symptom, treatment, ])
+        return redirect('/personal')
+    else:
+        return render(request, 'inserttrackable.html')
 
 def login_(request):
     if request.method == 'POST':
