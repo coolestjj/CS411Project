@@ -23,7 +23,7 @@ This is public square
 <form action="" method="POST">
     {% csrf_token %}
     <label class="form-label">Symptoms</label>
-    <select class="selectpicker show-tick form-control" data-live-search="true" name="symptoms">
+    <select class="selectpicker show-tick form-control" data-live-search="true" name="selected_symptom">
         {% for symptom in symptoms %}
             <option value="{{ symptom }}">{{ symptom }}</option>
         {% endfor %}
@@ -31,8 +31,38 @@ This is public square
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
-ToDo: 输入symptom后，查找同样symptom的病友，然后显示病友的信息
+Patients of: {{ selected_symptom }}
+<table class="table table-striped">
+    <thread>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">username</th>
+            <th scope="col">age</th>
+            <th scope="col">gender</th>
+            <th scope="col">country</th>
+            <th scope="col">email</th>
+            <th scope="col">phone</th>
+        </tr>
+    </thread>
 
+    <tbody>
+
+    {% for patient in patients %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ patient.0 }}</td>
+            <td>{{ patient.1 }}</td>
+            <td>{{ patient.2 }}</td>
+            <td>{{ patient.3 }}</td>
+            <td>{{ patient.4 }}</td>
+            <td>{{ patient.5 }}</td>
+        <tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+<br>
 ToDO: 可视化病友的信息
 
 </body>

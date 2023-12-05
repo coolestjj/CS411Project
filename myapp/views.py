@@ -258,7 +258,7 @@ def updateUser(request):
 def updateRecord(request, trackable_id):
     user_id = request.session.get('user_id')
 
-     # Get user's trackable info
+    # Get user's trackable info
     with connection.cursor() as cursor:
         cursor.execute("""
             select w.name as weather, w.value as weather_value, s.name as symptom, s.value as symptom, 
@@ -275,7 +275,7 @@ def updateRecord(request, trackable_id):
         trackableInfo = cursor.fetchall()
     print("print")
     print(trackableInfo)
-    wea_name =  trackableInfo[0]
+    wea_name = trackableInfo[0]
     wea_val = trackableInfo[1]
     s_name = trackableInfo[2]
     s_val = trackableInfo[3]
@@ -386,10 +386,16 @@ def updateRecord(request, trackable_id):
             cursor.execute("""
                 UPDATE Trackable SET checkin_date = %s, tag_id = %s, condition_id = %s, weather_id = %s, symptom_id = %s, treatment_id = %s WHERE trackable_id = %s AND user_id = %s
                            """,
-                [checkin_date_temp, tag_id, condition_id, weather_id, symptom_id, treatment_id, trackable_id, user_id])
+                           [checkin_date_temp, tag_id, condition_id, weather_id, symptom_id, treatment_id, trackable_id,
+                            user_id])
         return redirect('/personal')
     else:
-        return render(request, 'updateRecord.html', {'wea_name': wea_name,'wea_val': wea_val} )
+        return render(request, 'updateRecord.html', {'wea_name': wea_name, 'wea_val': wea_val})
+
+
+def delete_procedure(procedure_name):
+    with connection.cursor() as cursor:
+        cursor.execute(f"DROP PROCEDURE IF EXISTS {procedure_name};")
 
 
 def square(request):
@@ -400,7 +406,30 @@ def square(request):
         """, [])
     symptoms = [row[0] for row in cursor.fetchall()]
 
-    # if request.method == 'POST':
+    if request.method == 'POST':
+        selected_symptom = request.POST.get('selected_symptom')
+        with connection.cursor() as cursor:
+            delete_procedure('GetUserInfoBySymptom')
+            cursor.execute("""  
+                CREATE PROCEDURE GetUserInfoBySymptom(IN symptom_name VARCHAR(255))
+                BEGIN
+                    DECLARE symptomId INT;
 
+                    SELECT symptom_id INTO symptomId
+                    FROM Symptom
+                    WHERE name = symptom_name;
+
+                    SELECT u.username, u.age, u.gender, u.country, u.email, u.phone
+                    FROM UserInfo u
+                    LEFT JOIN Trackable t ON u.user_id = t.user_id
+                    WHERE t.symptom_id = symptomId;
+                END;
+            """)
+            connection.commit()
+            cursor.callproc('GetUserInfoBySymptom', [selected_symptom])
+            patients = cursor.fetchall()
+            print(patients)
+
+        return render(request, 'square.html', {'symptoms': symptoms, 'selected_symptom': selected_symptom, 'patients': patients})
 
     return render(request, 'square.html', {'symptoms': symptoms})
