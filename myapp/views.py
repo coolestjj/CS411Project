@@ -9,25 +9,109 @@ import string
 def home(request):
     return render(request, 'home.html')
 
+
 def inserttrackable(request):
     user_id = request.session.get('user_id')
     if request.method == 'POST':
+        public = request.POST.get('public')
         checkin_date = request.POST.get('checkinDate')
-        tag = int(request.POST.get('tag'))
-        condition = int(request.POST.get('condition'))
-        weather = int(request.POST.get('weather'))
-        symptom = int(request.POST.get('symptom'))
-        treatment = int(request.POST.get('treatment'))
+        tag = request.POST.get('tag')
+        condition = request.POST.get('condition')
+        weather = request.POST.get('weather')
+        symptom = request.POST.get('symptom')
+        treatment = request.POST.get('treatment')
 
+        condition_val = request.POST.get('condition_val')
+        weather_val = request.POST.get('weather_val')
+        treatment_val = request.POST.get('treatment_val')
+        symptom_val = request.POST.get('symptom_val')
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                        select tag_id from Tag where name = %s
+                    """, [tag])
+            tag_id = cursor.fetchone()
+
+        if tag_id is None:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                            insert into Tag (name)
+                            values (%s)
+                        """, [tag])
+                cursor.execute("SELECT LAST_INSERT_ID()")
+                tag_id = cursor.fetchone()[0]
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                        select condition_id from `Condition` 
+                        where name = %s and value = %s
+                    """, [condition, condition_val])
+            condition_id = cursor.fetchone()
+
+        if condition_id is None:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                            insert into `Condition` (name, value)
+                            values (%s, %s)
+                        """, [condition, condition_val])
+                cursor.execute("SELECT LAST_INSERT_ID()")
+                condition_id = cursor.fetchone()[0]
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                        select weather_id from Weather 
+                        where name = %s and value = %s
+                    """, [weather, weather_val])
+            weather_id = cursor.fetchone()
+
+        if weather_id is None:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                            insert into Weather (name, value)
+                            values (%s, %s)
+                        """, [weather, weather_val])
+                cursor.execute("SELECT LAST_INSERT_ID()")
+                weather_id = cursor.fetchone()[0]
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                        select treatment_id from Treatment where name = %s and value = %s
+                    """, [treatment, treatment_val])
+            treatment_id = cursor.fetchone()
+
+        if treatment_id is None:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                            insert into Treatment (name, value)
+                            values (%s, %s)
+                        """, [treatment, treatment_val])
+                cursor.execute("SELECT LAST_INSERT_ID()")
+                treatment_id = cursor.fetchone()[0]
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                        select symptom_id from Symptom where name = %s and value = %s
+                    """, [symptom, symptom_val])
+            symptom_id = cursor.fetchone()
+
+        if symptom_id is None:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                            insert into Symptom (name, value)
+                            values (%s, %s)
+                        """, [symptom, symptom_val])
+                cursor.execute("SELECT LAST_INSERT_ID()")
+                symptom_id = cursor.fetchone()[0]
 
         with connection.cursor() as cursor:
             cursor.execute(
-                "INSERT INTO Trackable ( user_id, checkin_date, tag_id, condition_id, weather_id, symptom_id, treatment_id) "
+                "INSERT INTO Trackable (user_id, checkin_date, tag_id, condition_id, weather_id, symptom_id, treatment_id) "
                 "VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                [user_id, checkin_date, tag, condition, weather, symptom, treatment, ])
+                [user_id, checkin_date, tag_id, condition_id, weather_id, symptom_id, treatment_id])
         return redirect('/personal')
     else:
         return render(request, 'inserttrackable.html')
+
 
 def login_(request):
     if request.method == 'POST':
@@ -185,8 +269,6 @@ def updateRecord(request, trackable_id):
         symptom_name = request.POST.get('symptom_name')
         symptom_val = request.POST.get('symptom_val')
 
-        tag_id, condition_id, weather_id, treatment_id, symptom_id = "", "", "", "", ""
-
         with connection.cursor() as cursor:
             cursor.execute("""
                 select tag_id from Tag where name = %s
@@ -259,7 +341,7 @@ def updateRecord(request, trackable_id):
 
         # Update
         with connection.cursor() as cursor:
-                cursor.execute("""
+            cursor.execute("""
                     UPDATE Trackable
                     SET public = %s, checkin_date = %s, tag_id = %s, condition_id = %s, weather_id = %s, treatment_id = %s, symptom_id = %s
                     WHERE trackable_id = %s
