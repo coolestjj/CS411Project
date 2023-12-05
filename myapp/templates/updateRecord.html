@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- jquery -->
+    <script src="http://cdn.staticfile.org/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
+    <!-- bootstrap -->
+    <link href="http://cdn.staticfile.org/twitter-bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://cdn.staticfile.org/twitter-bootstrap/3.3.1/js/bootstrap.min.js" type="text/javascript"></script>
+    <!-- bootstrap-select -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+    <title>Update userinfo</title>
+</head>
+<body>
+<form action="" method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">Public</label>
+        <input type="text" class="form-control" placeholder="public" aria-label="public"
+               aria-describedby="basic-addon1" name="public">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Checkin Date</label>
+        <input type="date" class="form-control" placeholder="00/00/0000" aria-label="checkin_date"
+               aria-describedby="date" name="public">
+    </div>
+
+    <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Tag</label>
+        <input type="text" class="form-control" placeholder="tag" aria-label="tag"
+               aria-describedby="tag" name="Tag">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Condition</label>
+        <input type="text" class="form-control" placeholder="Condition" aria-label="Condtion"
+               aria-describedby="condition" name="condition">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Weather</label>
+        <input type="text" class="form-control" placeholder="Condition" aria-label="Condtion"
+               aria-describedby="condition" name="condition">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Treatment</label>
+        <input type="number" class="form-control" placeholder="treatment" aria-label="treatment
+               aria-describedby="basic-addon1" name="treatment">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Symptom</label>
+        <input type="text" class="form-control" placeholder="pain" aria-label="checkin_date"
+           aria-describedby="basic-addon1" name="public">
+    </div>
+</form>
+
+{% if success %}
+    <p>{{ success }}</p>
+{% endif %}
+{% if error %}
+    <p>{{ error }}</p>
+{% endif %}
+
+</body>
+</html>
