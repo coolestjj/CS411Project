@@ -1,72 +1,75 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- jquery -->
-    <script src="http://cdn.staticfile.org/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
-    <!-- bootstrap -->
-    <link href="http://cdn.staticfile.org/twitter-bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="http://cdn.staticfile.org/twitter-bootstrap/3.3.1/js/bootstrap.min.js" type="text/javascript"></script>
-    <!-- bootstrap-select -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
-    <title>Update userinfo</title>
+    <meta charset="UTF-8">
+    <title>Update Trackable</title>
 </head>
 <body>
-<form action="" method="POST">
-    {% csrf_token %}
-    <div class="mb-3">
-        <label class="form-label">Public</label>
-        <input type="text" class="form-control" placeholder="public" aria-label="public"
-               aria-describedby="basic-addon1" name="public">
-    </div>
+    <h1>Update Trackable</h1>
 
-    <div class="mb-3">
-        <label class="form-label">Checkin Date</label>
-        <input type="date" class="form-control" placeholder="00/00/0000" aria-label="checkin_date"
-               aria-describedby="date" name="public">
-    </div>
+    <form action="" method="POST">
+        {% csrf_token %}
 
-    <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Tag</label>
-        <input type="text" class="form-control" placeholder="tag" aria-label="tag"
-               aria-describedby="tag" name="Tag">
-    </div>
+        <!-- Check-in Date -->
+        <label for="checkinDate">Check-in Date:</label>
+        <input type="date" id="checkinDate" name="checkinDate" required><br>
 
-    <div class="mb-3">
-        <label class="form-label">Condition</label>
-        <input type="text" class="form-control" placeholder="Condition" aria-label="Condtion"
-               aria-describedby="condition" name="condition">
-    </div>
+        <!-- Tag -->
+        <label for="tag">Tag:</label>
+        <input type="text" id="tag" name="tag"><br>
 
-    <div class="mb-3">
-        <label class="form-label">Weather</label>
-        <input type="text" class="form-control" placeholder="Condition" aria-label="Condtion"
-               aria-describedby="condition" name="condition">
-    </div>
+        <!-- Condition -->
+        <label for="condition">Condition_name:</label>
+        <input type="text" id="condition" name="condition"><br>
 
-    <div class="mb-3">
-        <label class="form-label">Treatment</label>
-        <input type="number" class="form-control" placeholder="treatment" aria-label="treatment
-               aria-describedby="basic-addon1" name="treatment">
-    </div>
+        <label class="form-label">Condition_value</label>
+        <select class="selectpicker show-tick form-control" data-live-search="true" name="condition_value">
+        <option>0</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        </select><br>
 
-    <div class="mb-3">
-        <label class="form-label">Symptom</label>
-        <input type="text" class="form-control" placeholder="pain" aria-label="checkin_date"
-           aria-describedby="basic-addon1" name="public">
-    </div>
-</form>
+        <!-- Weather -->
+        <label for="weather">Weather_name:</label>
+        <input type="text" id="weather" name="weather" value = {{wea_name}}><br>
 
-{% if success %}
-    <p>{{ success }}</p>
-{% endif %}
-{% if error %}
-    <p>{{ error }}</p>
-{% endif %}
+        <label for="weather">Weather_value:</label>
+        <input type="text" id="weather" name="weather_val"><br>
 
+        <!-- Symptom -->
+        <label for="symptom">Symptom:</label>
+        <input type="text" id="symptom" name="symptom"><br>
+
+        <label class="form-label">Symptom_value</label>
+        <select class="selectpicker show-tick form-control" data-live-search="true" name="symptom_val">
+        <option>0</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        </select><br>
+        
+
+        <!-- Treatment -->
+        <label for="treatment">Treatment:</label>
+        <input type="text" id="treatment" name="treatment"><br>
+
+        <label for="treatment">Treatment_value:</label>
+        <input type="text" id="treatment" name="treatment_val"><br>
+
+        <button type="submit">Submit</button>
+    </form>
 </body>
 </html>

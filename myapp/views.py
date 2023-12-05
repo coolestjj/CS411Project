@@ -142,8 +142,6 @@ def personal(request):
         trackable_id = request.POST.get('trackable_id')
         delete_action = request.POST.get('delete')
 
-        # print(trackable_id)
-
         if delete_action == 'record':
             with connection.cursor() as cursor:
                 cursor.execute("""
@@ -251,102 +249,137 @@ def updateUser(request):
 
 
 def updateRecord(request, trackable_id):
+    user_id = request.session.get('user_id')
+
+     # Get user's trackable info
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            select w.name as weather, w.value as weather_value, s.name as symptom, s.value as symptom, 
+            tre.name as treatment, tre.value as treatment_val, tra.checkin_date as checkinDate, t.name as tagname, 
+            c.name as `condition`, c.value as condition_val, tra.trackable_id, user_id
+            from Trackable tra
+            left join `Condition` c on tra.condition_id = c.condition_id
+            left join Symptom s on tra.symptom_id = s.symptom_id
+            left join Treatment tre on tra.treatment_id = tre.treatment_id
+            left join Tag t on tra.tag_id = t.tag_id
+            left join Weather w on tra.weather_id = w.weather_id
+            where user_id = %s AND trackable_id = %s
+            """, [user_id, trackable_id])
+        trackableInfo = cursor.fetchall()
+    print("print")
+    print(trackableInfo)
+    wea_name =  trackableInfo[0]
+    wea_val = trackableInfo[1]
+    s_name = trackableInfo[2]
+    s_val = trackableInfo[3]
+    tre_name = trackableInfo[4]
+    tre_val = trackableInfo[5]
+    date = trackableInfo[6]
+    tag_name = trackableInfo[7]
+    c_name = trackableInfo[8]
+    c_val = trackableInfo[9]
+
     if request.method == 'POST':
         public = request.POST.get('public')
-        checkin_date = request.POST.get('checkin_date')
+
+        checkin_date_temp = request.POST.get('checkinDate')
+
         tag = request.POST.get('tag')
 
-        condition_name = request.POST.get('condition_name')
+        condition = request.POST.get('condition')
         condition_val = request.POST.get('condition_val')
 
-        weather_name = request.POST.get('weather_name')
+        weather = request.POST.get('weather')
         weather_val = request.POST.get('weather_val')
 
-        treatment_name = request.POST.get('treatment_name')
-        treatment_val = request.POST.get('treatment_val')
-        treatment_unit = request.POST.get('treatment_unit')
-
-        symptom_name = request.POST.get('symptom_name')
+        symptom = request.POST.get('symptom')
         symptom_val = request.POST.get('symptom_val')
+
+        treatment = request.POST.get('treatment')
+        treatment_val = request.POST.get('treatment_val')
 
         with connection.cursor() as cursor:
             cursor.execute("""
-                select tag_id from Tag where name = %s
-            """, [tag])
+                        select tag_id from Tag where name = %s
+                    """, [tag])
             tag_id = cursor.fetchone()
 
         if tag_id is None:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    insert into Tag where name = %s
-                """, [tag])
+                            insert into Tag (name)
+                            values (%s)
+                        """, [tag])
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 tag_id = cursor.fetchone()[0]
 
         with connection.cursor() as cursor:
             cursor.execute("""
-                select condition_id from Condition where name = %s and value = %s
-            """, [condition_name, condition_val])
+                        select condition_id from `Condition` 
+                        where name = %s and value = %s
+                    """, [condition, condition_val])
             condition_id = cursor.fetchone()
 
         if condition_id is None:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    insert into Condition where name = %s and value = %s
-                """, [condition_name, condition_val])
+                            insert into `Condition` (name, value)
+                            values (%s, %s)
+                        """, [condition, condition_val])
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 condition_id = cursor.fetchone()[0]
 
         with connection.cursor() as cursor:
             cursor.execute("""
-                select weather_id from Weather where name = %s and value = %s
-            """, [weather_name, weather_val])
+                        select weather_id from Weather 
+                        where name = %s and value = %s
+                    """, [weather, weather_val])
             weather_id = cursor.fetchone()
 
         if weather_id is None:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    insert into Weather where name = %s and value = %s
-                """, [weather_name, weather_val])
+                            insert into Weather (name, value)
+                            values (%s, %s)
+                        """, [weather, weather_val])
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 weather_id = cursor.fetchone()[0]
 
         with connection.cursor() as cursor:
             cursor.execute("""
-                select treatment_id from Treatment where name = %s and value = %s and unit = %s
-            """, [treatment_name, treatment_val, treatment_unit])
+                        select treatment_id from Treatment where name = %s and value = %s
+                    """, [treatment, treatment_val])
             treatment_id = cursor.fetchone()
 
         if treatment_id is None:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    insert into Treatment where name = %s and value = %s and unit = %s
-                """, [treatment_name, treatment_val, treatment_unit])
+                            insert into Treatment (name, value)
+                            values (%s, %s)
+                        """, [treatment, treatment_val])
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 treatment_id = cursor.fetchone()[0]
 
         with connection.cursor() as cursor:
             cursor.execute("""
-                select symptom_id from Symptom where name = %s and value = %s
-            """, [symptom_name, symptom_val])
+                        select symptom_id from Symptom where name = %s and value = %s
+                    """, [symptom, symptom_val])
             symptom_id = cursor.fetchone()
 
         if symptom_id is None:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    insert into Symptom where name = %s and value = %s
-                """, [symptom_name, symptom_val])
+                            insert into Symptom (name, value)
+                            values (%s, %s)
+                        """, [symptom, symptom_val])
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 symptom_id = cursor.fetchone()[0]
 
-        # Update
         with connection.cursor() as cursor:
             cursor.execute("""
-                    UPDATE Trackable
-                    SET public = %s, checkin_date = %s, tag_id = %s, condition_id = %s, weather_id = %s, treatment_id = %s, symptom_id = %s
-                    WHERE trackable_id = %s
-                """, [public, checkin_date, tag_id, condition_id, weather_id, treatment_id, symptom_id, trackable_id])
-
+                UPDATE Trackable SET checkin_date = %s, tag_id = %s, condition_id = %s, weather_id = %s, symptom_id = %s, treatment_id = %s WHERE trackable_id = %s AND user_id = %s
+                           """,
+                [checkin_date_temp, tag_id, condition_id, weather_id, symptom_id, treatment_id, trackable_id, user_id])
         return redirect('/personal')
     else:
-        return render(request, 'updateRecord.html')
+        return render(request, 'updateRecord.html', {'wea_name': wea_name,'wea_val': wea_val} )
