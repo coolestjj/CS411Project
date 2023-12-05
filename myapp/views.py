@@ -203,7 +203,14 @@ def register(request):
 
         # Generate random user_id of 8 characters
         all_chars = string.ascii_letters + string.digits
-        user_id = ''.join(random.choices(all_chars, k=8))
+        while True:
+            # Generate random user_id until it is unique
+            user_id = ''.join(random.choices(all_chars, k=8))
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM UserInfo WHERE user_id = %s", [user_id])
+                row = cursor.fetchone()
+                if row is None:
+                    break
 
         # Check if email already exists
         with connection.cursor() as cursor:
@@ -383,3 +390,17 @@ def updateRecord(request, trackable_id):
         return redirect('/personal')
     else:
         return render(request, 'updateRecord.html', {'wea_name': wea_name,'wea_val': wea_val} )
+
+
+def square(request):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            select distinct name
+            from Symptom
+        """, [])
+    symptoms = [row[0] for row in cursor.fetchall()]
+
+    # if request.method == 'POST':
+
+
+    return render(request, 'square.html', {'symptoms': symptoms})

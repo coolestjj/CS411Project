@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- jquery -->
+    <script src="http://cdn.staticfile.org/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
+    <!-- bootstrap -->
+    <link href="http://cdn.staticfile.org/twitter-bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://cdn.staticfile.org/twitter-bootstrap/3.3.1/js/bootstrap.min.js" type="text/javascript"></script>
+    <!-- bootstrap-select -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+    <title>Square</title>
+</head>
+<body>
+
+This is public square
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <label class="form-label">Symptoms</label>
+    <select class="selectpicker show-tick form-control" data-live-search="true" name="symptoms">
+        {% for symptom in symptoms %}
+            <option value="{{ symptom }}">{{ symptom }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+ToDo: 输入symptom后，查找同样symptom的病友，然后显示病友的信息
+
+ToDO: 可视化病友的信息
+
+</body>
+</html>
