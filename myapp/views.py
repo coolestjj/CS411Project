@@ -152,9 +152,8 @@ def personal(request, user_id):
                 """, [trackable_id])
         elif delete_action == 'user':
             with connection.cursor() as cursor:
-                cursor.execute("""
-                    delete from UserInfo where user_id = %s
-                """, [user_id])
+                cursor.execute("delete from Trackable where user_id = %s;", [user_id])
+                cursor.execute("delete from UserInfo where user_id = %s;", [user_id])
             return redirect('/login')
 
     with connection.cursor() as cursor:
@@ -232,7 +231,7 @@ def register(request):
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 2)",
                 [user_id, username, email, phone, password, gender, country, age])
 
-        return render(request, 'register.html', {'success': 'Register successfully!'})
+        return redirect('/login')
     else:
         return render(request, 'register.html')
 
@@ -414,16 +413,15 @@ def square(request):
             cursor.execute("""  
                 CREATE PROCEDURE GetUserInfoBySymptom(IN symptom_name VARCHAR(255))
                 BEGIN
-                    DECLARE symptomId INT;
-
-                    SELECT symptom_id INTO symptomId
-                    FROM Symptom
-                    WHERE name = symptom_name;
-
-                    SELECT u.username, u.age, u.gender, u.country, u.email, u.phone
+                    SELECT u.username, u.age, u.gender, u.country, u.email, u.phone, tre.name, tre.value
                     FROM UserInfo u
                     LEFT JOIN Trackable t ON u.user_id = t.user_id
-                    WHERE t.symptom_id = symptomId;
+                    LEFT JOIN Treatment tre ON t.treatment_id = tre.treatment_id
+                    WHERE t.symptom_id IN (
+                        SELECT symptom_id
+                        FROM Symptom
+                        WHERE name = symptom_name
+                    );
                 END;
             """)
             connection.commit()
