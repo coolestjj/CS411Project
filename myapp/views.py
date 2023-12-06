@@ -190,10 +190,15 @@ def personal(request, user_id):
                     )
                 """, [user_id])
         symptoms = cursor.fetchall()
-        
 
+        treatments = []
+        for symptom in symptoms:
+            cursor.callproc('MostEffectiveTreatment', [symptom])
+            treatment_id, treatment_name, treatment_count = cursor.fetchone()
+            treatments.append(treatment_name)
+    # print(treatments)
     return render(request, 'personal.html', {'trackableInfo': trackableInfo,
-                                             'symptoms': symptoms, 'userInfo': userInfo})
+                                             'symptoms': zip(symptoms, treatments), 'userInfo': userInfo})
 
 
 def register(request):
