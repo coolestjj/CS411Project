@@ -281,23 +281,7 @@ def updateRecord(request, trackable_id):
             left join Weather w on tra.weather_id = w.weather_id
             where user_id = %s AND trackable_id = %s
             """, [user_id, trackable_id])
-<<<<<<< HEAD
         trackableInfo = cursor.fetchone()
-=======
-        trackableInfo = cursor.fetchall()
-    print("print")
-    print(trackableInfo)
-    wea_name = trackableInfo[0]
-    wea_val = trackableInfo[1]
-    s_name = trackableInfo[2]
-    s_val = trackableInfo[3]
-    tre_name = trackableInfo[4]
-    tre_val = trackableInfo[5]
-    date = trackableInfo[6]
-    tag_name = trackableInfo[7]
-    c_name = trackableInfo[8]
-    c_val = trackableInfo[9]
->>>>>>> e67ffeeadf162c2abea7eb49a53f66f27527691f
 
     if request.method == 'POST':
         public = request.POST.get('public')
@@ -404,9 +388,6 @@ def updateRecord(request, trackable_id):
                             user_id])
         return redirect('/personal')
     else:
-<<<<<<< HEAD
-        return render(request, 'updateRecord.html', {'trackableInfo': trackableInfo} )
-=======
         return render(request, 'updateRecord.html', {'wea_name': wea_name, 'wea_val': wea_val})
 
 
@@ -450,4 +431,3 @@ def square(request):
         return render(request, 'square.html', {'symptoms': symptoms, 'selected_symptom': selected_symptom, 'patients': patients})
 
     return render(request, 'square.html', {'symptoms': symptoms})
->>>>>>> e67ffeeadf162c2abea7eb49a53f66f27527691f
