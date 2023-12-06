@@ -440,7 +440,7 @@ def square(request):
             join
             Trackable t on u.user_id = t.user_id
             join
-            Symptom s on t.symptom_id = s.symptom_id and s.name like %s
+            Symptom s on t.symptom_id = s.symptom_id and s.name=%s
             group by
             case
             when u.age <= 30 then 'young'
@@ -449,12 +449,10 @@ def square(request):
             end
             order by
             user_count desc;
-            """, ['%' + selected_symptom + '%'])
+            """, [selected_symptom])
             results = cursor.fetchall()
             age_range = [row[0] for row in results]
             patient_number = [row[1] for row in results]
-            print(age_range)
-            print(patient_number)
 
         return render(request, 'square.html', {'symptoms': symptoms, 'selected_symptom': selected_symptom,
                                                'patients': patients, 'age_range': age_range,
