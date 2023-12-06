@@ -180,7 +180,6 @@ def personal(request, user_id):
         """, [user_id])
         trackableInfo = cursor.fetchall()
 
-
         # Get user's symptoms
         cursor.execute("""
                     select distinct s.name from Symptom s
@@ -190,7 +189,6 @@ def personal(request, user_id):
                     )
                 """, [user_id])
         symptoms = cursor.fetchall()
-        
 
     return render(request, 'personal.html', {'trackableInfo': trackableInfo,
                                              'symptoms': symptoms, 'userInfo': userInfo})
@@ -298,7 +296,7 @@ def updateRecord(request, trackable_id):
         print(condition_val)
         weather = request.POST.get('weather')
         weather_val = request.POST.get('weather_val')
-        
+
         symptom = request.POST.get('symptom')
         symptom_val = request.POST.get('symptom_val')
 
@@ -413,7 +411,7 @@ def square(request):
             cursor.execute("""  
                 CREATE PROCEDURE GetUserInfoBySymptom(IN symptom_name VARCHAR(255))
                 BEGIN
-                    SELECT u.username, u.age, u.gender, u.country, u.email, u.phone, tre.name, tre.value
+                    SELECT distinct u.username, u.age, u.gender, u.country, u.email, u.phone, tre.name, tre.value
                     FROM UserInfo u
                     LEFT JOIN Trackable t ON u.user_id = t.user_id
                     LEFT JOIN Treatment tre ON t.treatment_id = tre.treatment_id
@@ -427,8 +425,39 @@ def square(request):
             connection.commit()
             cursor.callproc('GetUserInfoBySymptom', [selected_symptom])
             patients = cursor.fetchall()
-            print(patients)
 
-        return render(request, 'square.html', {'symptoms': symptoms, 'selected_symptom': selected_symptom, 'patients': patients})
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            select
+            case
+            when u.age <= 30 then 'young'
+            when u.age > 30 and u.age <= 60 then 'middle'
+            when u.age > 60 then 'old'
+            end as age_range,
+            count(distinct u.user_id) as user_count
+            from
+            UserInfo u
+            join
+            Trackable t on u.user_id = t.user_id
+            join
+            Symptom s on t.symptom_id = s.symptom_id and s.name like %s
+            group by
+            case
+            when u.age <= 30 then 'young'
+            when u.age > 30 and u.age <= 60 then 'middle'
+            when u.age > 60 then 'old'
+            end
+            order by
+            user_count desc;
+            """, ['%' + selected_symptom + '%'])
+            results = cursor.fetchall()
+            age_range = [row[0] for row in results]
+            patient_number = [row[1] for row in results]
+            print(age_range)
+            print(patient_number)
+
+        return render(request, 'square.html', {'symptoms': symptoms, 'selected_symptom': selected_symptom,
+                                               'patients': patients, 'age_range': age_range,
+                                               'patient_number': patient_number})
 
     return render(request, 'square.html', {'symptoms': symptoms})
