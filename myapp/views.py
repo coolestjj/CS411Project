@@ -386,9 +386,9 @@ def updateRecord(request, trackable_id):
                            """,
                            [checkin_date_temp, tag_id, condition_id, weather_id, symptom_id, treatment_id, trackable_id,
                             user_id])
-        return redirect('/personal')
+        return redirect(f'/personal/{user_id}')
     else:
-        return render(request, 'updateRecord.html', {'wea_name': wea_name, 'wea_val': wea_val})
+        return render(request, 'updateRecord.html', {'trackableInfo': trackableInfo})
 
 
 def delete_procedure(procedure_name):
