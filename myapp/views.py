@@ -265,19 +265,7 @@ def updateRecord(request, trackable_id):
             left join Weather w on tra.weather_id = w.weather_id
             where user_id = %s AND trackable_id = %s
             """, [user_id, trackable_id])
-        trackableInfo = cursor.fetchall()
-    print("print")
-    print(trackableInfo)
-    wea_name =  trackableInfo[0]
-    wea_val = trackableInfo[1]
-    s_name = trackableInfo[2]
-    s_val = trackableInfo[3]
-    tre_name = trackableInfo[4]
-    tre_val = trackableInfo[5]
-    date = trackableInfo[6]
-    tag_name = trackableInfo[7]
-    c_name = trackableInfo[8]
-    c_val = trackableInfo[9]
+        trackableInfo = cursor.fetchone()
 
     if request.method == 'POST':
         public = request.POST.get('public')
@@ -288,10 +276,11 @@ def updateRecord(request, trackable_id):
 
         condition = request.POST.get('condition')
         condition_val = request.POST.get('condition_val')
-
+        print("condition:")
+        print(condition_val)
         weather = request.POST.get('weather')
         weather_val = request.POST.get('weather_val')
-
+        
         symptom = request.POST.get('symptom')
         symptom_val = request.POST.get('symptom_val')
 
@@ -382,4 +371,4 @@ def updateRecord(request, trackable_id):
                 [checkin_date_temp, tag_id, condition_id, weather_id, symptom_id, treatment_id, trackable_id, user_id])
         return redirect('/personal')
     else:
-        return render(request, 'updateRecord.html', {'wea_name': wea_name,'wea_val': wea_val} )
+        return render(request, 'updateRecord.html', {'trackableInfo': trackableInfo} )
