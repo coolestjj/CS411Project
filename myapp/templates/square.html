@@ -14,6 +14,7 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <title>Square</title>
 </head>
 <body>
@@ -67,7 +68,40 @@ Patients of: {{ selected_symptom }}
 </table>
 
 <br>
-ToDO: 可视化病友的信息
+
+Age distribution of patients of: {{ selected_symptom }}
+
+{{ patient_number|json_script:"patientNumber" }}
+{{ age_range|json_script:"ageRange" }}
+<div id="main" style="width: 600px;height:400px;"></div>
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 创建数据数组
+    var data = [];
+    var patient_number = JSON.parse(document.getElementById('patientNumber').textContent);
+    var age_range = JSON.parse(document.getElementById('ageRange').textContent);
+    for (var i = 0; i < patient_number.length; i++) {
+        data.push({
+            value: patient_number[i],
+            name: age_range[i] + ':' + patient_number[i]
+        });
+    }
+
+    // 指定图表的配置项和数据
+    var option = {
+        series: [
+            {
+                type: 'pie',
+                data: data
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
 
 </body>
 </html>
