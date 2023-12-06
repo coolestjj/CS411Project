@@ -53,9 +53,13 @@ Your trackable:
             <th scope="col">checkin date</th>
             <th scope="col">tag</th>
             <th scope="col">condition</th>
-            <th scope="col">weather</th>
+            <th scope="col">rate</th>
             <th scope="col">symptom</th>
+            <th scope="col">rate</th>
             <th scope="col">treatment</th>
+            <th scope="col">dosage</th>
+            <th scope="col">weather</th>
+            <th scope="col">description</th>
             <th scope="col">action</th>
         </tr>
     </thread>
@@ -71,15 +75,19 @@ Your trackable:
             <td>{{ record.3 }}</td>
             <td>{{ record.4 }}</td>
             <td>{{ record.5 }}</td>
+            <td>{{ record.6 }}</td>
+            <td>{{ record.7 }}</td>
+            <td>{{ record.8 }}</td>
+            <td>{{ record.9 }}</td>
             <td>
                 <form method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="delete" value="record">
-                    <input type="hidden" name="trackable_id" value="{{ record.6 }}">
-                    <input type="hidden" name="user_id" value="{{ record.7 }}">
+                    <input type="hidden" name="trackable_id" value="{{ record.10 }}">
+                    <input type="hidden" name="user_id" value="{{ record.11 }}">
                     <input type="submit" class="btn btn-danger" value="Delete">
                 </form>
-                <a href="{% url 'myapp:updateRecord' record.6 %}" type="submit" class="btn btn-primary">Update</a>
+                <a href="{% url 'myapp:updateRecord' record.10 %}" type="submit" class="btn btn-primary">Update</a>
 
             </td>
         </tr>
