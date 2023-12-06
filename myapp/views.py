@@ -128,14 +128,17 @@ def login_(request):
             return render(request, 'login.html', {'error': 'Invalid email or password'})
         else:
             request.session['user_id'] = user[0]  # user_id is the first column
-            return redirect('/personal')
+            return redirect(f'/personal/{user[0]}')
     else:
         return render(request, 'login.html')
 
 
-def personal(request):
-    # Get user_id from session
-    user_id = request.session.get('user_id')
+def personal(request, user_id):
+    # # Get user_id from session
+    # user_id = request.session.get('user_id')
+    # Get user_id from session if not provided in URL
+    if user_id is None:
+        user_id = request.session.get('user_id')
 
     # Delete user data or trackable record
     if request.method == 'POST' and 'delete' in request.POST:
@@ -157,7 +160,7 @@ def personal(request):
     with connection.cursor() as cursor:
         # Get user's info
         cursor.execute("""
-            select email, phone, gender from UserInfo
+            select username, email, phone, gender, age, country from UserInfo
             where user_id = %s
         """, [user_id])
         userInfo = cursor.fetchone()
@@ -203,7 +206,14 @@ def register(request):
 
         # Generate random user_id of 8 characters
         all_chars = string.ascii_letters + string.digits
-        user_id = ''.join(random.choices(all_chars, k=8))
+        while True:
+            # Generate random user_id until it is unique
+            user_id = ''.join(random.choices(all_chars, k=8))
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM UserInfo WHERE user_id = %s", [user_id])
+                row = cursor.fetchone()
+                if row is None:
+                    break
 
         # Check if email already exists
         with connection.cursor() as cursor:
@@ -226,6 +236,12 @@ def register(request):
 
 def updateUser(request):
     user_id = request.session.get('user_id')
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            select * from UserInfo where user_id = %s
+        """, [user_id])
+        userInfo = cursor.fetchone()
+
     if request.method == "POST":
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -245,13 +261,13 @@ def updateUser(request):
         return redirect('/login')
 
     else:
-        return render(request, 'updateUser.html')
+        return render(request, 'updateUser.html', {'userInfo': userInfo})
 
 
 def updateRecord(request, trackable_id):
     user_id = request.session.get('user_id')
 
-     # Get user's trackable info
+    # Get user's trackable info
     with connection.cursor() as cursor:
         cursor.execute("""
             select w.name as weather, w.value as weather_value, s.name as symptom, s.value as symptom, 
@@ -265,7 +281,23 @@ def updateRecord(request, trackable_id):
             left join Weather w on tra.weather_id = w.weather_id
             where user_id = %s AND trackable_id = %s
             """, [user_id, trackable_id])
+<<<<<<< HEAD
         trackableInfo = cursor.fetchone()
+=======
+        trackableInfo = cursor.fetchall()
+    print("print")
+    print(trackableInfo)
+    wea_name = trackableInfo[0]
+    wea_val = trackableInfo[1]
+    s_name = trackableInfo[2]
+    s_val = trackableInfo[3]
+    tre_name = trackableInfo[4]
+    tre_val = trackableInfo[5]
+    date = trackableInfo[6]
+    tag_name = trackableInfo[7]
+    c_name = trackableInfo[8]
+    c_val = trackableInfo[9]
+>>>>>>> e67ffeeadf162c2abea7eb49a53f66f27527691f
 
     if request.method == 'POST':
         public = request.POST.get('public')
@@ -368,7 +400,54 @@ def updateRecord(request, trackable_id):
             cursor.execute("""
                 UPDATE Trackable SET checkin_date = %s, tag_id = %s, condition_id = %s, weather_id = %s, symptom_id = %s, treatment_id = %s WHERE trackable_id = %s AND user_id = %s
                            """,
-                [checkin_date_temp, tag_id, condition_id, weather_id, symptom_id, treatment_id, trackable_id, user_id])
+                           [checkin_date_temp, tag_id, condition_id, weather_id, symptom_id, treatment_id, trackable_id,
+                            user_id])
         return redirect('/personal')
     else:
+<<<<<<< HEAD
         return render(request, 'updateRecord.html', {'trackableInfo': trackableInfo} )
+=======
+        return render(request, 'updateRecord.html', {'wea_name': wea_name, 'wea_val': wea_val})
+
+
+def delete_procedure(procedure_name):
+    with connection.cursor() as cursor:
+        cursor.execute(f"DROP PROCEDURE IF EXISTS {procedure_name};")
+
+
+def square(request):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            select distinct name
+            from Symptom
+        """, [])
+    symptoms = [row[0] for row in cursor.fetchall()]
+
+    if request.method == 'POST':
+        selected_symptom = request.POST.get('selected_symptom')
+        with connection.cursor() as cursor:
+            delete_procedure('GetUserInfoBySymptom')
+            cursor.execute("""  
+                CREATE PROCEDURE GetUserInfoBySymptom(IN symptom_name VARCHAR(255))
+                BEGIN
+                    DECLARE symptomId INT;
+
+                    SELECT symptom_id INTO symptomId
+                    FROM Symptom
+                    WHERE name = symptom_name;
+
+                    SELECT u.username, u.age, u.gender, u.country, u.email, u.phone
+                    FROM UserInfo u
+                    LEFT JOIN Trackable t ON u.user_id = t.user_id
+                    WHERE t.symptom_id = symptomId;
+                END;
+            """)
+            connection.commit()
+            cursor.callproc('GetUserInfoBySymptom', [selected_symptom])
+            patients = cursor.fetchall()
+            print(patients)
+
+        return render(request, 'square.html', {'symptoms': symptoms, 'selected_symptom': selected_symptom, 'patients': patients})
+
+    return render(request, 'square.html', {'symptoms': symptoms})
+>>>>>>> e67ffeeadf162c2abea7eb49a53f66f27527691f
