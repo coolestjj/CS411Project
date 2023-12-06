@@ -108,7 +108,7 @@ def inserttrackable(request):
                 "INSERT INTO Trackable (user_id, checkin_date, tag_id, condition_id, weather_id, symptom_id, treatment_id) "
                 "VALUES (%s, %s, %s, %s, %s, %s, %s)",
                 [user_id, checkin_date, tag_id, condition_id, weather_id, symptom_id, treatment_id])
-        return redirect('/personal')
+        return redirect(f'/personal/{user_id}')
     else:
         return render(request, 'inserttrackable.html')
 
@@ -168,8 +168,9 @@ def personal(request, user_id):
 
         # Get user's trackable info
         cursor.execute("""
-            select tra.checkin_date as checkinDate, t.name as tagname, c.name as `condition`,
-             w.name as weather, s.name as symptom, tre.name as treatment, tra.trackable_id, user_id
+            select tra.checkin_date as checkinDate, t.name as tagname, c.name as `condition`, c.value as condition_val,
+            s.name as symptom, s.value as symptom_val, tre.name as treatment, tre.value as treatment_val, 
+            w.name as weather, w.value as weather_val, tra.trackable_id, user_id
             from Trackable tra
             left join `Condition` c on tra.condition_id = c.condition_id
             left join Symptom s on tra.symptom_id = s.symptom_id
@@ -189,6 +190,7 @@ def personal(request, user_id):
                     )
                 """, [user_id])
         symptoms = cursor.fetchall()
+        
 
     return render(request, 'personal.html', {'trackableInfo': trackableInfo,
                                              'symptoms': symptoms, 'userInfo': userInfo})
