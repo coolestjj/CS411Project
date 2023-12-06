@@ -21,42 +21,42 @@
     <div class="mb-3">
         <label class="form-label">User name</label>
         <input type="text" class="form-control" placeholder="Username" aria-label="Username"
-               aria-describedby="basic-addon1" name="username">
+               aria-describedby="basic-addon1" name="username" value={{ userInfo.1 }}>
     </div>
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Email address</label>
         <input type="email" class="form-control" id="exampleInputEmail1"
-               aria-describedby="emailHelp" name="email">
+               aria-describedby="emailHelp" name="email" value={{ userInfo.6 }}>
     </div>
     <div class="mb-3">
         <label for="exampleInputPassword1" class="form-label">Password</label>
         <input type="password" class="form-control"
-               id="exampleInputPassword1" name="password">
+               id="exampleInputPassword1" name="password" value={{ userInfo.2 }}>
     </div>
     <div class="mb-3">
         <label class="form-label">Phone</label>
         <input type="text" class="form-control" placeholder="Phone number" aria-label="Phone number"
-               aria-describedby="basic-addon1" name="phone">
+               aria-describedby="basic-addon1" name="phone" value={{ userInfo.7 }}>
     </div>
 
     <label class="form-label">Gender</label>
     <select class="form-select" aria-label="Default select example" name="gender">
-        <option value="male">Male</option>
-        <option value="female">Female</option>
+        <option value="male" {% if userInfo.4 == "male" %}selected{% endif %}>Male</option>
+        <option value="female" {% if userInfo.5 == "female" %}selected{% endif %}>Female</option>
     </select>
 
     <div class="mb-3">
         <label class="form-label">Age</label>
         <input type="number" class="form-control" placeholder="age" aria-label="age"
-               aria-describedby="basic-addon1" name="age">
+               aria-describedby="basic-addon1" name="age" value={{ userInfo.3 }}>
     </div>
 
     <label class="form-label">Country</label>
     <select class="selectpicker show-tick form-control" data-live-search="true" name="country">
-        <option>US</option>
-        <option>CA</option>
-        <option>CN</option>
-        <option>N/A</option>
+        <option {% if userInfo.5 == "US" %}selected{% endif %}>US</option>
+        <option {% if userInfo.5  == "CA" %}selected{% endif %}>CA</option>
+        <option {% if userInfo.5  == "CN" %}selected{% endif %}>CN</option>
+        <option {% if userInfo.5  == "N/A" %}selected{% endif %}>N/A</option>
     </select>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

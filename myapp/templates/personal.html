@@ -22,9 +22,13 @@
     <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
          data-bs-parent="#accordionExample">
         <div class="accordion-body">
-            Your email is {{ userInfo.0 }}
+            Hello, {{ userInfo.0 }}
             <br>
-            Your info is {{ userInfo.1 }} and {{ userInfo.2 }}
+            Your contact info is {{ userInfo.1 }} and {{ userInfo.2 }}
+            <br>
+            You are a {{ userInfo.4 }}-year-old {{ userInfo.3 }}
+            <br>
+            You are from {{ userInfo.5 }}
         </div>
     </div>
     <form method="POST">

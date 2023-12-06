@@ -128,14 +128,17 @@ def login_(request):
             return render(request, 'login.html', {'error': 'Invalid email or password'})
         else:
             request.session['user_id'] = user[0]  # user_id is the first column
-            return redirect('/personal')
+            return redirect(f'/personal/{user[0]}')
     else:
         return render(request, 'login.html')
 
 
-def personal(request):
-    # Get user_id from session
-    user_id = request.session.get('user_id')
+def personal(request, user_id):
+    # # Get user_id from session
+    # user_id = request.session.get('user_id')
+    # Get user_id from session if not provided in URL
+    if user_id is None:
+        user_id = request.session.get('user_id')
 
     # Delete user data or trackable record
     if request.method == 'POST' and 'delete' in request.POST:
@@ -157,7 +160,7 @@ def personal(request):
     with connection.cursor() as cursor:
         # Get user's info
         cursor.execute("""
-            select email, phone, gender from UserInfo
+            select username, email, phone, gender, age, country from UserInfo
             where user_id = %s
         """, [user_id])
         userInfo = cursor.fetchone()
@@ -233,6 +236,12 @@ def register(request):
 
 def updateUser(request):
     user_id = request.session.get('user_id')
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            select * from UserInfo where user_id = %s
+        """, [user_id])
+        userInfo = cursor.fetchone()
+
     if request.method == "POST":
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -252,7 +261,7 @@ def updateUser(request):
         return redirect('/login')
 
     else:
-        return render(request, 'updateUser.html')
+        return render(request, 'updateUser.html', {'userInfo': userInfo})
 
 
 def updateRecord(request, trackable_id):
