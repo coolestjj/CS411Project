@@ -25,7 +25,7 @@ def inserttrackable(request):
         weather_val = request.POST.get('weather_val')
         treatment_val = request.POST.get('treatment_val')
         symptom_val = request.POST.get('symptom_val')
-
+        print(condition_val)
         with connection.cursor() as cursor:
             cursor.execute("""
                         select tag_id from Tag where name = %s
@@ -180,6 +180,7 @@ def personal(request, user_id):
             where user_id = %s
         """, [user_id])
         trackableInfo = cursor.fetchall()
+
 
         # Get user's symptoms
         cursor.execute("""
